@@ -38,37 +38,16 @@ func StartServer() {
 		log.Fatal("Erro ao abrir o banco de dados:", err)
 	}
 	defer db.Close()
-	criarTabelaCotacoes(db)
+	crateTableCotacoes(db)
 
 	http.HandleFunc("/cotacao", func(w http.ResponseWriter, r *http.Request) {
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
-		defer cancel()
-
-		if r.URL.Path != "/cotacao" {
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-
-		cotacao, err := buscarCotacao(ctx)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err = salvarCotacao(db, cotacao)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		json.NewEncoder(w).Encode(cotacao)
+		handleCotacao(w, r, db)
 	})
 
 	http.ListenAndServe(":8080", nil)
 }
 
-func criarTabelaCotacoes(db *sql.DB) {
+func crateTableCotacoes(db *sql.DB) {
 	sqlTabelaCotacoes := `
 	CREATE TABLE IF NOT EXISTS cotacoes (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,6 +67,33 @@ func criarTabelaCotacoes(db *sql.DB) {
 	if err != nil {
 		log.Fatal("Erro ao criar tabela:", err)
 	}
+}
+
+func handleCotacao(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
+	defer cancel()
+
+	if r.URL.Path != "/cotacao" {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	cotacao, err := buscarCotacao(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ctxDb, cancelDb := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancelDb()
+	err = salvarCotacao(db, cotacao, ctxDb)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(cotacao)
 }
 
 func buscarCotacao(ctx context.Context) (*Cotacao, error) {
@@ -113,12 +119,13 @@ func buscarCotacao(ctx context.Context) (*Cotacao, error) {
 	return &cotacao, err
 }
 
-func salvarCotacao(db *sql.DB, cotacao *Cotacao) error {
-	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
-	defer cancel()
+func salvarCotacao(db *sql.DB, cotacao *Cotacao, ctx context.Context) error {
+	stmt, err := db.PrepareContext(ctx, "INSERT INTO cotacoes (code, codein, name, high, low, varBid, pctChange, bid, ask, timestamp, createDate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)")
+	if err != nil {
+		return err
+	}
 
-	_, err := db.ExecContext(ctx, "INSERT INTO cotacoes (code, codein, name, high, low, varBid, pctChange, bid, ask, timestamp, createDate) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+	_, err = stmt.ExecContext(ctx,
 		cotacao.Usdbrl.Code,
 		cotacao.Usdbrl.Codein,
 		cotacao.Usdbrl.Name,
@@ -131,9 +138,5 @@ func salvarCotacao(db *sql.DB, cotacao *Cotacao) error {
 		cotacao.Usdbrl.Timestamp,
 		cotacao.Usdbrl.CreateDate,
 	)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
