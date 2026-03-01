@@ -41,7 +41,8 @@ func StartServer() {
 	criarTabelaCotacoes(db)
 
 	http.HandleFunc("/cotacao", func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(r.Context(), 200*time.Millisecond)
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 200*time.Millisecond)
 		defer cancel()
 
 		if r.URL.Path != "/cotacao" {
@@ -105,7 +106,6 @@ func buscarCotacao(ctx context.Context) (*Cotacao, error) {
 	if err != nil {
 		return nil, err
 	}
-	print(string(cotacaoJson))
 
 	var cotacao Cotacao
 	err = json.Unmarshal(cotacaoJson, &cotacao)
