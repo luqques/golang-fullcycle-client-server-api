@@ -81,10 +81,10 @@ Desafio da Pós Go Expert pela FullCycle. Neste desafio, você deve aplicar os c
 Siga este passo a passo para subir e rodar o necessário para testar este projeto.
 
 ## Executando o projeto localmente
-1. Na raiz do projeto, executar o seguinte comando em um terminal para subir o server.go:
+1. Na raiz do projeto, executar o seguinte comando em um terminal para subir o server.go:\n
 `go run .\server\server.go`
 
-2. Com o server.go rodando sem erros, deve ser executado o próximo comando em um NOVO terminal para execução do client.go:
+2. Com o server.go rodando sem erros, deve ser executado o próximo comando em um NOVO terminal para execução do client.go:\n
 `go run .\client\client.go`
 
-3. Com isso o arquivo do banco de dados SQLite será criado com o nome cotacoes.db na raiz do projeto, além do arquivo contacao.txt com a cotação atual gravada.
+3. Com isso o arquivo do banco de dados SQLite será criado com o nome `cotacoes.db` na raiz do projeto, além do arquivo `contacao.txt` com a cotação atual gravada.
