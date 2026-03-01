@@ -1,4 +1,4 @@
-package internal
+package main
 
 import (
 	"context"
@@ -29,7 +29,7 @@ type Cotacao struct {
 	} `json:"USDBRL"`
 }
 
-func StartServer() {
+func main() {
 	fmt.Println("Iniciando servidor...")
 	defer fmt.Println("Encerrando servidor...")
 

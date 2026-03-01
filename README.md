@@ -80,7 +80,11 @@ Desafio da Pós Go Expert pela FullCycle. Neste desafio, você deve aplicar os c
 # Como rodar o projeto
 Siga este passo a passo para subir e rodar o necessário para testar este projeto.
 
-## Rodando o server e client Go
-1. Na raiz do projeto, rodar o seguinte comando no cmd para rodar o server.go e em seguida o client.go:
-`go run .\cmd\server\main.go`
-`go run .\cmd\client\main.go`
+## Executando o projeto localmente
+1. Na raiz do projeto, executar o seguinte comando em um terminal para subir o server.go:
+`go run .\server\server.go`
+
+2. Com o server.go rodando sem erros, deve ser executado o próximo comando em um NOVO terminal para execução do client.go:
+`go run .\client\client.go`
+
+3. Com isso o arquivo do banco de dados SQLite será criado com o nome cotacoes.db na raiz do projeto, além do arquivo contacao.txt com a cotação atual gravada.
