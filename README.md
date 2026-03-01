@@ -79,3 +79,14 @@ Desafio da Pós Go Expert pela FullCycle. Neste desafio, você deve aplicar os c
 
 ---
 # Como rodar o projeto
+Siga este passo a passo para subir e rodar o necessário para testar este projeto.
+
+## Subindo o Banco de dados SQLite
+1. Com o Docker instalado e rodando na sua máquina, acesse a raiz deste projeto e rode o comando abaixo:
+`docker-compose up -d`
+
+
+## Rodando o server e client Go
+1. Na raiz do projeto, rodar o seguinte comando no cmd para rodar o server.go e em seguida o client.go:
+`go run .\cmd\server\main.go`
+`go run .\cmd\client\main.go`
